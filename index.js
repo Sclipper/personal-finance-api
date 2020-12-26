@@ -3,13 +3,17 @@ import bodyParser from 'body-parser'
 import multer from 'multer'
 import mongoose from 'mongoose'
 import UserController from './src/Controllers/UserController'
+import AuthControler from './src/Controllers/AuthControler'
+import { authenticateToken } from './src/helpers'
+
+import { MONGO_CONNECT } from './src/helpers/env'
 
 import 'dotenv/config'
 
 const upload = multer()
 
 const app = express()
-mongoose.connect(process.env.MONGO_CONNECT,
+mongoose.connect(MONGO_CONNECT,
   {
     useNewUrlParser: true,
     useUnifiedTopology: true,
@@ -22,6 +26,7 @@ app.use(upload.array())
 app.use(express.static('public'))
 app.use(express.json())
 
-app.use('/user', UserController)
+app.use('/user', authenticateToken, UserController)
+app.use('/auth', AuthControler)
 
 app.listen(8080, () => console.log('Example app listening on port 8080!'))

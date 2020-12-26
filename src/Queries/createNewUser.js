@@ -6,6 +6,7 @@ export const createNewUser = async ({
   lastName,
   phoneNumber,
   email,
+  refreshToken,
   password,
 }) => {
   const newUser = new User({
@@ -13,6 +14,7 @@ export const createNewUser = async ({
     last_name: lastName,
     phone_number: phoneNumber,
     email,
+    refresh_token: refreshToken,
     password: hashPassword(password),
   })
   return newUser.save()

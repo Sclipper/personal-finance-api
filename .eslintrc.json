@@ -17,6 +17,7 @@
     "class-methods-use-this": "off",
     "object-curly-newline": ["error", { "multiline": true }],
     "global-require": "off",
+    "arrow-body-style": "off",
     "no-use-before-define": ["error", { "functions": false }],
     "linebreak-style": "off",
     "quotes": [

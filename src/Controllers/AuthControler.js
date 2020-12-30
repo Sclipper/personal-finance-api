@@ -9,31 +9,27 @@ const AuthControler = Router()
 
 AuthControler.post('/register', async (req, res) => {
   const {
-    firstName,
-    lastName,
-    phoneNumber,
+    name,
+    country,
     email,
     password,
   } = req?.body
-
   try {
     const refreshToken = generateRefreshToken({
-      firstName,
-      lastName,
-      phoneNumber,
+      name,
       email,
+      country,
     })
 
     const newUser = await createNewUser({
-      firstName,
-      lastName,
-      phoneNumber,
+      name,
       email,
+      country,
       refreshToken,
       password,
     })
 
-    res.send(newUser)
+    res.send({ ...newUser, refreshToken })
   } catch (err) {
     res.send(err)
   }
@@ -45,17 +41,17 @@ AuthControler.post('/login', async (req, res) => {
     password,
   } = req?.body
   try {
+    console.log('login')
     const users = await findUser({ email })
-    const user = users[0]
+    if (!users?.length) {
+      res.status(401)
+      res.send('No user found')
+      return
+    }
+    const user = users?.[0]
     const isPasswordsMatch = await checkHashedPassword({ password, hash: user.password })
     if (user && isPasswordsMatch) {
-      const accessToken = generateAccessToken({
-        firstName: user.first_name,
-        lastName: user.last_name,
-        phoneNumber: user.phone_number,
-        email: user.email,
-      })
-      res.json({ accessToken, refreshToken: user.refresh_token })
+      res.json({ refreshToken: user.refresh_token })
     } else {
       res.status(401)
       res.send('Failed authentication')
@@ -78,9 +74,8 @@ AuthControler.post('/token', async (req, res) => {
         .then(correspondingUser => {
           if (correspondingUser?.length) {
             const accessToken = generateAccessToken({
-              firstName: user.firstName,
-              lastName: user.lastName,
-              phoneNumber: user.phoneNumber,
+              name: user.name,
+              country: user.country,
               email: user.email,
             })
             res.json({ accessToken })
